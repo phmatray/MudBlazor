@@ -1,10 +1,9 @@
 ﻿//Copyright(c) Alessandro Ghidini.All rights reserved.
 //Changes and improvements Copyright (c) The MudBlazor Team.
 
-using System;
-using System.Threading;
 using MudBlazor.Components.Snackbar;
-using MudBlazor.Components.Snackbar.InternalComponents;
+
+#nullable enable
 
 namespace MudBlazor
 {
@@ -13,12 +12,12 @@ namespace MudBlazor
         private bool _paused = false;
         private bool _transitionCancellable = true;
         private bool _hideOnResume = false;
-        private Timer Timer { get; set; }
+        private Timer Timer { get; }
         internal SnackBarMessageState State { get; }
-        public string Message => SnackbarMessage.Text;
+        public string? Message => SnackbarMessage.Text;
         internal SnackbarMessage SnackbarMessage { get; }
-        public event Action<Snackbar> OnClose;
-        public event Action OnUpdate;
+        public event Action<Snackbar>? OnClose;
+        public event Action? OnUpdate;
         public Severity Severity => State.Options.Severity;
 
         internal Snackbar(SnackbarMessage message, SnackbarOptions options)
@@ -32,17 +31,30 @@ namespace MudBlazor
 
         internal void Clicked(bool fromCloseIcon)
         {
+            // You should only be able to interact with the snackbar once.
             if (State.UserHasInteracted)
-                return; // You should only be able to interact with the snackbar once.
+            {
+                return;
+            }
 
-            if (!fromCloseIcon)
+            if (fromCloseIcon)
+            {
+                // Invoke user-defined task when close button is clicked.
+                // The returned Task is deliberately ignored. This approach allows the method
+                // to proceed without awaiting the completion of the task, maintaining UI responsiveness.
+                _ = State.Options.CloseButtonClickFunc?.Invoke(this);
+            }
+            else
             {
                 // Do not start the hiding transition if no click action
-                if (State.Options.Onclick == null)
+                if (State.Options.OnClick is null)
+                {
                     return;
+                }
 
-                // Click action is executed only if it's not from the close icon
-                State.Options.Onclick.Invoke(this);
+                // Click action is executed only if it's not from the close icon.
+                // Same as above, we are deliberately not awaiting.
+                _ = State.Options.OnClick?.Invoke(this);
             }
 
             State.UserHasInteracted = true;
@@ -70,9 +82,9 @@ namespace MudBlazor
             {
                 _paused = false;
             }
+            // The current transition can't be cancelled.
             else if (!_transitionCancellable)
             {
-                // The current transition can't be cancelled.
                 return;
             }
 
@@ -85,17 +97,23 @@ namespace MudBlazor
             if (state.IsShowing())
             {
                 if (!animate || !StartTimer(options.ShowTransitionDuration))
+                {
                     TransitionTo(SnackbarState.Visible);
+                }
             }
             else if (state.IsVisible() && !options.RequireInteraction)
             {
                 if (!animate || !StartTimer(options.VisibleStateDuration))
+                {
                     TransitionTo(SnackbarState.Hiding);
+                }
             }
             else if (state.IsHiding())
             {
                 if (!animate || !StartTimer(options.HideTransitionDuration))
+                {
                     OnClose?.Invoke(this);
+                }
             }
 
             OnUpdate?.Invoke();
@@ -103,7 +121,7 @@ namespace MudBlazor
 
         public void PauseTransitions(bool pause)
         {
-            // Some transitions, like from the close button, can't be canceled or it would restart the transition when the user leaves the snackbar.
+            // Some transitions, like from the close button, can't be cancelled or it would restart the transition when the user leaves the snackbar.
             if (!_transitionCancellable)
             {
                 _paused = false;
@@ -139,7 +157,7 @@ namespace MudBlazor
             }
         }
 
-        private void TimerElapsed(object _)
+        private void TimerElapsed(object? _)
         {
             // Let the transition be triggered after the pause is ended.
             if (_paused)
@@ -173,10 +191,12 @@ namespace MudBlazor
         private bool StartTimer(int duration)
         {
             if (duration <= 0)
+            {
                 return false;
+            }
 
             State.Stopwatch.Restart();
-            Timer?.Change(duration, Timeout.Infinite);
+            Timer.Change(duration, Timeout.Infinite);
 
             return true;
         }
@@ -184,7 +204,7 @@ namespace MudBlazor
         private void StopTimer()
         {
             State.Stopwatch.Stop();
-            Timer?.Change(Timeout.Infinite, Timeout.Infinite);
+            Timer.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
         public void Dispose()
@@ -196,14 +216,13 @@ namespace MudBlazor
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing)
+            {
                 return;
+            }
 
             StopTimer();
 
-            var timer = Timer;
-            Timer = null;
-
-            timer?.Dispose();
+            Timer.Dispose();
         }
     }
 }

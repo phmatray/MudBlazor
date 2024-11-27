@@ -1,5 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿// Copyright (c) MudBlazor 2021
+// MudBlazor licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor.State;
@@ -8,6 +10,10 @@ using MudBlazor.Utilities;
 namespace MudBlazor;
 
 #nullable enable
+
+/// <summary>
+/// A layer which darkens a window, often as part of showing a <see cref="MudDialog" />.
+/// </summary>
 public partial class MudOverlay : MudComponentBase, IAsyncDisposable
 {
     private readonly ParameterState<bool> _visibleState;
@@ -30,6 +36,9 @@ public partial class MudOverlay : MudComponentBase, IAsyncDisposable
             .AddStyle(Style)
             .Build();
 
+    /// <summary>
+    /// The manager for scroll events.
+    /// </summary>
     [Inject]
     public IScrollManager ScrollManager { get; set; } = null!;
 
@@ -63,10 +72,11 @@ public partial class MudOverlay : MudComponentBase, IAsyncDisposable
     public EventCallback<bool> VisibleChanged { get; set; }
 
     /// <summary>
-    /// Sets <see cref="Visible"/> to <c>false</c> on click.
+    /// Sets <see cref="Visible"/> to <c>false</c> when the overlay is clicked and calls <see cref="OnClosed"/>.
     /// </summary>
     /// <remarks>
     /// Defaults to <c>false</c>.
+    /// This is preferred over the previously used <c>OnClick</c> event.
     /// </remarks>
     [Parameter]
     [Category(CategoryTypes.Overlay.ClickAction)]
@@ -135,7 +145,9 @@ public partial class MudOverlay : MudComponentBase, IAsyncDisposable
     /// <summary>
     /// Occurs when the overlay is clicked.
     /// </summary>
-    [Obsolete("The OnClosed event with AutoClose should be preferred as they handle touch as well. Otherwise you can still use the @onclick event directly.")]
+    /// <remarks>
+    /// If you need to close the overlay automatically, you can use <see cref="AutoClose"/> and <see cref="OnClosed"/> instead. 
+    /// </remarks>
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }
 
@@ -178,9 +190,7 @@ public partial class MudOverlay : MudComponentBase, IAsyncDisposable
             await OnClosed.InvokeAsync();
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
         await OnClick.InvokeAsync(ev);
-#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     /// <summary>

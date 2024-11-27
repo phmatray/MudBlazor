@@ -1,11 +1,5 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bunit;
+﻿using Bunit;
 using FluentAssertions;
-using MudBlazor.Docs.Examples;
-using MudBlazor.UnitTests.TestComponents;
 using MudBlazor.UnitTests.TestComponents.Charts;
 using NUnit.Framework;
 
@@ -20,7 +14,7 @@ namespace MudBlazor.UnitTests.Components
         [Test]
         public void PieChartSelectionTest()
         {
-            var comp = Context.RenderComponent<PieExample1>();
+            var comp = Context.RenderComponent<PieChartSelectionTest>();
             // print the generated html
             comp.Find("h6").InnerHtml.Trim().Should().Be("Selected portion of the chart: -1");
             // now click something and see that the selected index changes:
@@ -33,7 +27,7 @@ namespace MudBlazor.UnitTests.Components
         [Test]
         public void DonutChartSelectionTest()
         {
-            var comp = Context.RenderComponent<DonutExample1>();
+            var comp = Context.RenderComponent<DonutChartSelectionTest>();
             // print the generated html
             comp.Find("h6").InnerHtml.Trim().Should().Be("Selected portion of the chart: -1");
             // now click something and see that the selected index changes:
@@ -59,7 +53,7 @@ namespace MudBlazor.UnitTests.Components
         [Test]
         public void BarChartSelectionTest()
         {
-            var comp = Context.RenderComponent<BarExample1>();
+            var comp = Context.RenderComponent<BarChartSelectionTest>();
             // print the generated html
             comp.Find("h6").InnerHtml.Trim().Should().Be("Selected portion of the chart: -1");
             // now click something and see that the selected index changes:
@@ -83,12 +77,12 @@ namespace MudBlazor.UnitTests.Components
             var height = "350px";
 
             var comp = Context.RenderComponent<MudChart>(parameters => parameters
-              .Add(p => p.ChartType, ChartType.Line)
-              .Add(p => p.ChartSeries, series)
-              .Add(p => p.XAxisLabels, xAxis)
-              .Add(p => p.ChartOptions, options)
-              .Add(p => p.Width, width)
-              .Add(p => p.Height, height)
+                .Add(p => p.ChartType, ChartType.Line)
+                .Add(p => p.ChartSeries, series)
+                .Add(p => p.XAxisLabels, xAxis)
+                .Add(p => p.ChartOptions, options)
+                .Add(p => p.Width, width)
+                .Add(p => p.Height, height)
             );
 
             // check the first Y Axis value without any format
@@ -99,12 +93,12 @@ namespace MudBlazor.UnitTests.Components
             // now, we will apply currency format
             options.YAxisFormat = "c2";
             comp.SetParametersAndRender(parameters => parameters
-              .Add(p => p.ChartType, ChartType.Line)
-              .Add(p => p.ChartSeries, series)
-              .Add(p => p.XAxisLabels, xAxis)
-              .Add(p => p.ChartOptions, options)
-              .Add(p => p.Width, width)
-              .Add(p => p.Height, height)
+                .Add(p => p.ChartType, ChartType.Line)
+                .Add(p => p.ChartSeries, series)
+                .Add(p => p.XAxisLabels, xAxis)
+                .Add(p => p.ChartOptions, options)
+                .Add(p => p.Width, width)
+                .Add(p => p.Height, height)
             );
             yaxis = comp.FindAll("g.mud-charts-yaxis");
             yaxis.Should().NotBeNull();
@@ -113,12 +107,12 @@ namespace MudBlazor.UnitTests.Components
             //number format
             options.YAxisFormat = "n6";
             comp.SetParametersAndRender(parameters => parameters
-              .Add(p => p.ChartType, ChartType.Line)
-              .Add(p => p.ChartSeries, series)
-              .Add(p => p.XAxisLabels, xAxis)
-              .Add(p => p.ChartOptions, options)
-              .Add(p => p.Width, width)
-              .Add(p => p.Height, height)
+                .Add(p => p.ChartType, ChartType.Line)
+                .Add(p => p.ChartSeries, series)
+                .Add(p => p.XAxisLabels, xAxis)
+                .Add(p => p.ChartOptions, options)
+                .Add(p => p.Width, width)
+                .Add(p => p.Height, height)
             );
             yaxis = comp.FindAll("g.mud-charts-yaxis");
             yaxis.Should().NotBeNull();

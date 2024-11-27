@@ -5,9 +5,10 @@
 <div @attributes="UserAttributes"
      class="@Classname"
      style="@Style"
+     @onpointermove="@PointerMove"
      @onpointerenter="@PointerEnterAsync"
      @onpointerleave="@PointerLeaveAsync"
-     @oncontextmenu="@(ActivationEvent == MouseEvent.RightClick ? ToggleMenuAsync : null)"
+     @oncontextmenu="@((ActivationEvent == MouseEvent.RightClick ? ToggleMenuAsync : null)!)"
      @oncontextmenu:preventDefault="@(ActivationEvent == MouseEvent.RightClick)">
 
     @if (ActivatorContent != null)
@@ -43,15 +44,15 @@
                        Disabled="@Disabled"
                        Ripple="@Ripple"
                        DropShadow="@DropShadow"
-                       @onclick="@ToggleMenuAsync"
+                       OnClick="@ToggleMenuAsync"
                        aria-label="@AriaLabel" />
     }
 
     @* The portal has to include the cascading values inside, because it's not able to teletransport the cascade *@
-    <MudPopover Open="@_open"
-                Class="@PopoverClass"
+    <MudPopover Open="@Open"
+                Class="@PopoverClassname"
                 MaxHeight="@MaxHeight"
-                AnchorOrigin="@AnchorOrigin"
+                AnchorOrigin="@(PositionAtCursor ? Origin.TopLeft : AnchorOrigin)"
                 TransformOrigin="@TransformOrigin"
                 RelativeWidth="@FullWidth"
                 Style="@_popoverStyle"
@@ -60,6 +61,7 @@
             <MudList T="object"
                      Class="@ListClass"
                      Dense="@Dense"
+                     @onpointermove="@PointerMove"
                      @onpointerenter="@PointerEnterAsync"
                      @onpointerleave="@PointerLeaveAsync">
                 @ChildContent
@@ -67,5 +69,5 @@
         </CascadingValue>
     </MudPopover>
 
-    <MudOverlay Visible="@(_open && ActivationEvent != MouseEvent.MouseOver)" AutoClose OnClosed="CloseMenuAsync" LockScroll="LockScroll" />
+    <MudOverlay Visible="Open && !_isTemporary" AutoClose OnClosed="CloseMenuAsync" LockScroll="LockScroll" />
 </div>
